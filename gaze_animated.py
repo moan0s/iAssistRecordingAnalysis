@@ -62,7 +62,6 @@ def update(frame_number):
     scat.set_edgecolors(drops['color'])
     scat.set_sizes(drops['size'])
     scat.set_offsets(drops['position'])
-    sleep(0.03)
 
 
 # Construct the animation, using the update function as the animation director.
