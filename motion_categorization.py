@@ -9,8 +9,8 @@ def load(filepath: str):
     return h5py.File(filepath, 'r')
 
 
-def draw(acceleration, velocity, velocity2):
-    fig, (ax1, ax2, ax3) = plt.subplots(3)
+def draw(acceleration, velocity, velocity2, timestamps):
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4)
 
     ax1.set_ylabel("Acceleration")
     ax1.plot(acceleration[0])
@@ -24,6 +24,13 @@ def draw(acceleration, velocity, velocity2):
     ax3.plot(velocity2[0])
     ax3.plot(velocity2[1])
     ax3.plot(velocity2[2])
+
+    steps = np.diff(timestamps)
+    ax4.set_ylabel("Derivative of Acceleration")
+    ax4.plot(np.diff(acceleration[0])/steps, label="X")
+    ax4.plot(np.diff(acceleration[1])/steps, label="X")
+    ax4.plot(np.diff(acceleration[2])/steps, label="X")
+    ax4.legend(loc='upper center', shadow=True, fontsize='x-large')
     plt.show()
 
 
@@ -52,10 +59,10 @@ def cli():
     acceleration = data["Sensors"]["FOREARM_R"]["Accelerometer"]
     timestamps = np.arange(acceleration.shape[1]) / 80
     velocity, position = calculate_position(acceleration, timestamps)
-    acceleration2 = np.array((acceleration[0] - np.mean(acceleration[0]), acceleration[1] - np.mean(acceleration[1]),
+    acceleration_corrected = np.array((acceleration[0] - np.mean(acceleration[0]), acceleration[1] - np.mean(acceleration[1]),
                               acceleration[2] - np.mean(acceleration[2])))
-    velocity2, position2 = calculate_position(acceleration2, timestamps)
-    draw(acceleration, velocity, velocity2)
+    velocity2, position2 = calculate_position(acceleration_corrected, timestamps)
+    draw(acceleration, velocity, velocity2, timestamps)
 
 
 if __name__ == "__main__":
