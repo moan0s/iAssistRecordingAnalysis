@@ -21,7 +21,7 @@ def draw(data):
     ax2.set_ylabel("Orientation (deg)")
     ax2.plot(sensor_0["Orientation"][0])
     ax2.plot(sensor_0["Orientation"][1])
-    ax3.plot(sensor_0["Orientation"][2])
+    ax2.plot(sensor_0["Orientation"][2])
 
     ax3.set_ylabel("Angular velocity")
     ax3.plot(sensor_0["Gyroscope"][0])
