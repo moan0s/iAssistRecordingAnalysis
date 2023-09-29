@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import h5py
 from matplotlib import pyplot as plt
+from numpy.fft import fft
 
 
 def load(filepath: str):
@@ -27,11 +28,16 @@ def draw(acceleration, velocity, velocity2, timestamps):
 
     steps = np.diff(timestamps)
     ax4.set_ylabel("Derivative of Acceleration")
-    ax4.plot(np.diff(acceleration[0])/steps, label="X")
-    ax4.plot(np.diff(acceleration[1])/steps, label="X")
-    ax4.plot(np.diff(acceleration[2])/steps, label="X")
+    ax4.plot(np.diff(acceleration[0]) / steps, label="X")
+    ax4.plot(np.diff(acceleration[1]) / steps, label="X")
+    ax4.plot(np.diff(acceleration[2]) / steps, label="X")
     ax4.legend(loc='upper center', shadow=True, fontsize='x-large')
     plt.show()
+
+
+def fft(acceleration_data, timestamps):
+    for i in range(40, acceleration_data.shape[1]):
+        fft(acceleration_data[0])
 
 
 def calculate_position(acceleration_data, timestamps, initial_position=(0, 0, 0), initial_velocity=(0, 0, 0)):
@@ -59,8 +65,9 @@ def cli():
     acceleration = data["Sensors"]["FOREARM_R"]["Accelerometer"]
     timestamps = np.arange(acceleration.shape[1]) / 80
     velocity, position = calculate_position(acceleration, timestamps)
-    acceleration_corrected = np.array((acceleration[0] - np.mean(acceleration[0]), acceleration[1] - np.mean(acceleration[1]),
-                              acceleration[2] - np.mean(acceleration[2])))
+    acceleration_corrected = np.array(
+        (acceleration[0] - np.mean(acceleration[0]), acceleration[1] - np.mean(acceleration[1]),
+         acceleration[2] - np.mean(acceleration[2])))
     velocity2, position2 = calculate_position(acceleration_corrected, timestamps)
     draw(acceleration, velocity, velocity2, timestamps)
 
