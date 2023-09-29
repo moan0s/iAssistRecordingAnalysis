@@ -10,7 +10,7 @@ def load(filepath: str):
 
 def draw(data):
     mtw_sensor_id = 0
-    sensor_0 = data["Sensors"]["0"]
+    sensor_0 = data["Sensors"]["FOREARM_R"]
     fig, (ax1, ax2, ax3) = plt.subplots(3)
 
     ax1.set_ylabel("Acceleration")
