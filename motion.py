@@ -10,18 +10,20 @@ def load(filepath: str):
 
 def draw(data):
     mtw_sensor_id = 0
-    sensor_0 = data["Sensors"]["0"]
+    sensor_0 = data["Sensors"]["FOREARM_R"]
     fig, (ax1, ax2, ax3) = plt.subplots(3)
 
     ax1.set_ylabel("Acceleration")
-    ax1.plot(sensor_0["Accelerometer"][0])
-    ax1.plot(sensor_0["Accelerometer"][1])
-    ax1.plot(sensor_0["Accelerometer"][2])
+    ax1.plot(sensor_0["Accelerometer"][0], label="X")
+    ax1.plot(sensor_0["Accelerometer"][1], label="Y")
+    ax1.plot(sensor_0["Accelerometer"][2], label="Z")
+    ax1.legend(loc='upper center', shadow=True, fontsize='x-large')
 
     ax2.set_ylabel("Orientation (deg)")
-    ax2.plot(sensor_0["Orientation"][0])
-    ax2.plot(sensor_0["Orientation"][1])
-    ax3.plot(sensor_0["Orientation"][2])
+    ax2.plot(sensor_0["Orientation"][0], label="X")
+    ax2.plot(sensor_0["Orientation"][1], label="Y")
+    ax2.plot(sensor_0["Orientation"][2], label="Z")
+    ax2.legend(loc='upper center', shadow=True, fontsize='x-large')
 
     ax3.set_ylabel("Angular velocity")
     ax3.plot(sensor_0["Gyroscope"][0])
