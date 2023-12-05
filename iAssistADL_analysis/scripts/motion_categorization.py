@@ -2,6 +2,8 @@ import argparse
 import pandas as pd
 import numpy as np
 import h5py
+import matplotlib
+matplotlib.use('TkAgg')
 from matplotlib import pyplot as plt
 from numpy.fft import fft
 
@@ -35,9 +37,12 @@ def draw(acceleration, velocity, velocity2, timestamps):
     plt.show()
 
 
-def fft(acceleration_data, timestamps):
-    for i in range(40, acceleration_data.shape[1]):
-        fft(acceleration_data[0])
+def calc_fft(signal, timestamps):
+    fft_results = []
+    for i in range(40, len(signal)):
+        result = fft(signal[i-40:i])
+        fft_results.append(result)
+    return fft_results
 
 
 def calculate_position(acceleration_data, timestamps, initial_position=(0, 0, 0), initial_velocity=(0, 0, 0)):
@@ -70,6 +75,9 @@ def cli():
          acceleration[2] - np.mean(acceleration[2])))
     velocity2, position2 = calculate_position(acceleration_corrected, timestamps)
     draw(acceleration, velocity, velocity2, timestamps)
+
+    # Calculate and show FFT
+    fft_results = calc_fft(acceleration[0], timestamps)
 
 
 if __name__ == "__main__":

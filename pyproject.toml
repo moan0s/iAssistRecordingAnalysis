@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+
+[project]
+name = "iAssistADL-analysis"
+description = "A project to analyze iAssistADL recordings"
+keywords = ["research", "ataxia", "parkinson", "analysis"]
+license = { text = "AGPL-3.0-or-later" }
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+    "h5py",
+    "matplotlib",
+    "numpy",
+    "pandas",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+dynamic = ["version", "readme"]
+
+[tool.setuptools.packages]
+find = { }
+
+[tool.setuptools.dynamic]
+version = { attr = "iAssistADL_analysis.__version__" }
+readme = { file = "README.rst" }
+

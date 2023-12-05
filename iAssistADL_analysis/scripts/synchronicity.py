@@ -40,23 +40,29 @@ def value_diffs(list_to_diff, scale=1):
 
 
 def cli():
-    xsense_path = "/home/moanos/Nextcloud/Masterarbeit/recordings/5/2023-10-31_14-08-47_xsense.h5"
-    event_path = "/home/moanos/Nextcloud/Masterarbeit/recordings/5/2023-10-31_14-08-47_events.csv"
+    xsense_sensor = "UPPER_ARM_R"
+    base_path = "/home/moanos/Nextcloud/Masterarbeit/recordings/sync/14"
+    xsense_path = f"{base_path}/xsense.h5"
+    event_path = f"{base_path}/events.csv"
     data_acc = load(xsense_path)
-    hand_acceleration = data_acc["Sensors"]["HAND_R"]["Accelerometer"]
-    hand_timestamps = data_acc["Sensors"]["HAND_R"]["Timestamp"][0]/1_000_000
+    hand_acceleration = data_acc["Sensors"][xsense_sensor]["Accelerometer"]
+    hand_timestamps = data_acc["Sensors"][xsense_sensor]["Timestamp"][0]/1_000_000
     canonical_start = hand_timestamps[0]
     hand_timestamps = hand_timestamps-canonical_start
-    time_diffs_ms = value_diffs(hand_timestamps, 0.001)
+    time_diffs_ms = value_diffs(hand_timestamps, 1000)
     print(f"Time diffs. Mean {np.mean(time_diffs_ms):.6}, Std {np.std(time_diffs_ms):.6}")
     print(f"Min: {min(time_diffs_ms)}, Max: {max(time_diffs_ms):.6}")
     
-    events = pd.read_csv(event_path)
-    event_ts = events.timestamp
-    event_ts = event_ts-canonical_start
+    len([diff for diff in time_diffs_ms if diff > 9])
     
+    try:
+        events = pd.read_csv(event_path)
+        event_ts = events.timestamp
+        event_ts = event_ts-canonical_start
     
-    draw(hand_acceleration, hand_timestamps, time_diffs_ms, event_ts)
+        draw(hand_acceleration, hand_timestamps, time_diffs_ms, event_ts)
+    except FileNotFoundError:
+        draw(hand_acceleration, hand_timestamps, time_diffs_ms, [0])
 
 
 if __name__ == "__main__":
