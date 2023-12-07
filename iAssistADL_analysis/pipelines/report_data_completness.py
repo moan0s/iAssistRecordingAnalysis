@@ -1,6 +1,7 @@
 import h5py
 import pandas as pd
 from iAssistADL_analysis.tools import samples_lost
+import numpy as np
 
 
 def get_xsense_data(base_recording_path: str):
@@ -43,22 +44,31 @@ if __name__ == "__main__":
     recording_base_path = "/home/moanos/Nextcloud/Masterarbeit/recordings/WI/1/5"
     print("XSENSE")
     for sensor in ["FOREARM_R", "HAND_R", "STERNUM", "UPPER_ARM_R"]:
-        timestamps = get_xsense_timestamps(recording_base_path, sensor)
-        samples_lost_abs, samples_lost_percentage = samples_lost(timestamps)
-        effective_sampling_frequency = len(timestamps) / (timestamps[-1] - timestamps[0])
+        sensor_timestamps = get_xsense_timestamps(recording_base_path, sensor)
+        processing_timestamps = get_xsense_timestamps(recording_base_path, sensor, "processing")
+        time_diff_to_processing = processing_timestamps-sensor_timestamps
+        samples_lost_abs, samples_lost_percentage = samples_lost(sensor_timestamps)
+        effective_sampling_frequency = len(sensor_timestamps) / (sensor_timestamps[-1] - sensor_timestamps[0])
         print(f"For {sensor} {samples_lost_abs} datums seem to be lost which equates to {samples_lost_percentage * 100:.3}%.")
         print(f"The sampling frequency overall was {effective_sampling_frequency:.4}Hz")
+        print(f"The average delay to processing was {np.mean(time_diff_to_processing)*1000:.3}ms")
 
     print("\nZED")
-    timestamps = get_zed_timestamps(recording_base_path)
-    samples_lost_abs, samples_lost_percentage = samples_lost(timestamps)
-    effective_sampling_frequency = len(timestamps) / (timestamps[-1] - timestamps[0])
+    sensor_timestamps = get_zed_timestamps(recording_base_path)
+    processing_timestamps = get_zed_timestamps(recording_base_path, "processing")
+    time_diff_to_processing = processing_timestamps - sensor_timestamps
+    samples_lost_abs, samples_lost_percentage = samples_lost(sensor_timestamps)
+    effective_sampling_frequency = len(sensor_timestamps) / (sensor_timestamps[-1] - sensor_timestamps[0])
     print(f"For ZED3D {samples_lost_abs} datums seem to be lost which equates to {samples_lost_percentage * 100:.3}%.")
     print(f"The sampling frequency overall was {effective_sampling_frequency:.4}Hz")
+    print(f"The average delay to processing was {np.mean(time_diff_to_processing)*1000:.3}ms")
 
     print("\nPUPIL")
-    timestamps = get_gaze_timestamps(recording_base_path)
-    samples_lost_abs, samples_lost_percentage = samples_lost(timestamps)
-    effective_sampling_frequency = len(timestamps) / (timestamps[-1] - timestamps[0])
+    sensor_timestamps = get_gaze_timestamps(recording_base_path)
+    processing_timestamps = get_gaze_timestamps(recording_base_path, "processing")
+    time_diff_to_processing = np.array(processing_timestamps) - sensor_timestamps
+    samples_lost_abs, samples_lost_percentage = samples_lost(sensor_timestamps)
+    effective_sampling_frequency = len(sensor_timestamps) / (sensor_timestamps[-1] - sensor_timestamps[0])
     print(f"For gaze data {samples_lost_abs} datums seem to be lost which equates to {samples_lost_percentage * 100:.3}%.")
     print(f"The sampling frequency overall was {effective_sampling_frequency:.4}Hz")
+    print(f"The average delay to processing was {np.mean(time_diff_to_processing)*1000}ms")
