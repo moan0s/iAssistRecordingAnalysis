@@ -20,17 +20,19 @@ dependencies = [
     "matplotlib",
     "numpy",
     "pandas",
+    "bashplotlib",
 ]
+
+dynamic = ["version", "readme"]
 
 [project.optional-dependencies]
 test = ["pytest"]
 
-dynamic = ["version", "readme"]
 
 [tool.setuptools.packages]
 find = { }
 
 [tool.setuptools.dynamic]
 version = { attr = "iAssistADL_analysis.__version__" }
-readme = { file = "README.rst" }
+readme = { file = "README.md" }
 
