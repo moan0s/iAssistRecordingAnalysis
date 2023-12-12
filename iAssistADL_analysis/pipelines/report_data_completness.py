@@ -62,6 +62,7 @@ if __name__ == "__main__":
         print(f"For {sensor} {samples_lost_abs} datums seem to be lost which equates to {samples_lost_percentage * 100:.3}%.")
         print(f"The sampling frequency overall was {effective_sampling_frequency:.4}Hz")
         print(f"The average delay to processing was {np.mean(time_diff_to_processing)*1000:.3}ms")
+        print(f"There were {len(jump_list)} jumps ({len(jump_list)/len(seqIDs):.4}%) which jumped over {sum(jump_list)} datums")
         plot_hist(jump_list)
 
     print("\nZED")
