@@ -32,3 +32,5 @@ def jumps(seqIDS: list):
         if diff > 1:
             jump_list.append(diff)
     return jump_list
+
+
