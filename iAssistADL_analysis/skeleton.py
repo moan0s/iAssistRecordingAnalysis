@@ -1,0 +1,41 @@
+
+from enum import Enum
+class Joint(Enum):
+    SPINE_1 = 1
+    SPINE_2 = 2
+    SPINE_3 = 3
+    NECK = 4
+    NOSE = 5
+    LEFT_EYE = 6
+    RIGHT_EYE = 7
+    LEFT_EAR = 8
+    RIGHT_EAR = 9
+    LEFT_CLAVICLE = 10
+    RIGHT_CLAVICLE = 11
+    LEFT_SHOULDER = 12
+    RIGHT_SHOULDER = 13
+    LEFT_ELBOW = 14
+    RIGHT_ELBOW = 15
+    LEFT_WRIST = 16
+    RIGHT_WRIST = 17
+    LEFT_HIP = 18
+    RIGHT_HIP = 19
+    LEFT_KNEE = 20
+    RIGHT_KNEE = 21
+    LEFT_ANKLE = 22
+    RIGHT_ANKLE = 23
+    LEFT_BIG_TOE = 24
+    RIGHT_BIG_TOE = 25
+    LEFT_SMALL_TOE = 26
+    RIGHT_SMALL_TOE = 27
+    LEFT_HEEL = 28
+    RIGHT_HEEL = 29
+    # Hands
+    LEFT_HAND_THUMB_4 = 30  # tip
+    RIGHT_HAND_THUMB_4 = 31
+    LEFT_HAND_INDEX_1 = 32  # knuckle
+    RIGHT_HAND_INDEX_1 = 33
+    LEFT_HAND_MIDDLE_4 = 34  # tip
+    RIGHT_HAND_MIDDLE_4 = 35
+    LEFT_HAND_PINKY_1 = 36  # knuckle
+    RIGHT_HAND_PINKY_1 = 37
