@@ -22,7 +22,7 @@ if __name__ == '__main__':
     recording = "1"
     base_data_path = "/home/moanos/software/Compsense/recordings"
     recording_base_path = f"{base_data_path}/{subject}/{session}/{recording}"
-    zed_data = loaders.get_zed_data(recording_base_path)
+    zed_data = loaders.get_zed_skeleton3d_data(recording_base_path)
 
     print(zed_data["Skeletons"]["Body_21"]["RIGHT_SHOULDER"]["SkeletonJoint3d"])
 
