@@ -18,8 +18,8 @@ def samples_lost(timestamps: list):
             number_samples_lost_in_diff = round(diff / median_deviation_time_diffs)-1
             number_samples_lost = number_samples_lost + number_samples_lost_in_diff
 
-    percentage_samples_lost = number_samples_lost/len(time_diffs)
-    return number_samples_lost, percentage_samples_lost
+    ratio_samples_lost = number_samples_lost/len(time_diffs)
+    return number_samples_lost, ratio_samples_lost
 
 def jumps(seqIDS: list):
     """"
