@@ -5,7 +5,7 @@ def diff_between_samples(samples):
 
 def samples_lost(timestamps: list):
     """"
-    Based on timestamps this funtion determines the number of datums lost
+    Based on timestamps this function determines the number of datums lost
     """
 
     time_diffs = diff_between_samples(timestamps)
@@ -23,7 +23,7 @@ def samples_lost(timestamps: list):
 
 def jumps(seqIDS: list):
     """"
-    Based on seqIDS this funtion determines all jumps
+    Based on seqIDS this function determines all jumps
     """
 
     diffs = diff_between_samples(seqIDS)
