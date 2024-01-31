@@ -27,15 +27,16 @@ def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq):
 
     ax1.pcolormesh(timestamps, freqs, np.abs(cwtmatr), cmap='viridis', shading='gouraud')
     ax1.plot(timestamps,estimated_freq,color='r')
-    ax2.set_xlabel('Time')
-    ax2.set_xlabel('Frequency (Hz)')
+    ax1.set_xlabel('Time')
+    ax1.set_ylabel('Frequency (Hz)')
 
 
     ax2.plot(timestamps, real_signal,color='g')
     ax2.plot(timestamps, estimated_signal, color='y')
     ax2.set_xlabel('Time')
-    ax2.set_xlabel('Signal')
+    ax2.set_ylabel('Signal')
 
+    fig.tight_layout()
     plt.show()
 
 def find_timestamp_idx(time, timestamps):
