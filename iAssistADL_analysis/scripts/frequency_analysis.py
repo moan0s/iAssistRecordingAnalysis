@@ -26,15 +26,16 @@ def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq):
     ax1.set_title("Frequency Analysis")
 
     ax1.pcolormesh(timestamps, freqs, np.abs(cwtmatr), cmap='viridis', shading='gouraud')
-    ax1.plot(timestamps,estimated_freq,color='r')
+    ax1.plot(timestamps,estimated_freq,color='r', label='Estimated Frequency')
     ax1.set_xlabel('Time')
     ax1.set_ylabel('Frequency (Hz)')
+    ax1.legend()
 
-
-    ax2.plot(timestamps, real_signal,color='g')
-    ax2.plot(timestamps, estimated_signal, color='y')
+    ax2.plot(timestamps, real_signal,color='g', label='Real Signal')
+    ax2.plot(timestamps, estimated_signal, color='y', label='Estimated Signal')
     ax2.set_xlabel('Time')
     ax2.set_ylabel('Signal')
+    ax2.legend()
 
     fig.tight_layout()
     plt.show()
