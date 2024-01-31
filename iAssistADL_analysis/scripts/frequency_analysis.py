@@ -4,7 +4,7 @@ from scipy import signal
 from iAssistADL_analysis.loaders import *
 
 
-def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq):
+def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, event_timestamps=None):
 
     real_signal = np.array(real_signal)
     real_signal[np.isnan(real_signal)] = 0
@@ -37,6 +37,11 @@ def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq):
     ax2.set_ylabel('Signal')
     ax2.legend()
 
+    if event_timestamps is not None:
+        for event_timestamp in event_timestamps:
+            ax1.axvline(event_timestamp)
+            ax2.axvline(event_timestamp)
+
     fig.tight_layout()
     plt.show()
 
@@ -58,15 +63,19 @@ if __name__ == "__main__":
     subject = "BRAD-3115"
     session = "1"
     recording = "2"
-    sensor = "FOREARM_R" # FOREARM_R HAND_R
-
-    display_range = (5,6) # Timestamp in seconds from beginning
+    sensor = "HAND_R" # FOREARM_R HAND_R
 
     base_data_path = "/home/moanos/software/Compsense/recordings"
     recording_base_path = f"{base_data_path}/{subject}/{session}/{recording}"
 
+    display_range = (5,9) # Timestamp in seconds from beginning
+    event_timestamps = np.array([1706265098.245, 1706265099.111, 1706265100.178, 1706265100.9117, 1706265101.9119])
+
+
     sensor_timestamps = get_xsense_timestamps(recording_base_path, sensor)
+    event_timestamps = event_timestamps-sensor_timestamps[0]
     sensor_timestamps = sensor_timestamps-sensor_timestamps[0]
+
     xsense = get_xsense_data(recording_base_path)
     real_signal = xsense["Sensors"][sensor]["Accelerometer"][0] # Selects the x-axis of the given sensor
     estimated_signal = xsense["Sensors"][sensor]["Estimated_Signal"][0]
@@ -74,7 +83,7 @@ if __name__ == "__main__":
 
     sensor_timestamps, (real_signal, estimated_signal, estimated_freq) = cut(display_range, sensor_timestamps, (real_signal, estimated_signal, estimated_freq))
 
-    plot_stuff(sensor_timestamps, real_signal, estimated_signal, estimated_freq)
+    plot_stuff(sensor_timestamps, real_signal, estimated_signal, estimated_freq, event_timestamps)
     
 
     
