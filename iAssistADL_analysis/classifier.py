@@ -1,6 +1,15 @@
 import numpy as np
 import math
 
+class PowerEstimator():
+    def __init__(self):
+        self.power = 0
+        self.last_datum = 0
+        self.coefficient = 0.9
+    def update(self, datum):
+        self.power = self.power*self.coefficient+abs(self.last_datum-datum)
+        self.last_datum = datum
+        return self.power
 
 class BMFLC():
     """ FLC filter class
@@ -107,16 +116,19 @@ class FLCWrapper:
         if classifier is None:
             classifier = BMFLC(mu=0.01, fmin=3, fmax=10, dF=0.4)
         self.classifier = classifier
+        self.power_estimator = PowerEstimator()
 
 
     def estimate(self, timestamps, data):
         estimated_signal = []
         estimated_freq = []
+        estimated_power = []
         for idx, timestamp in enumerate(timestamps):
-            est = self.classifier.update(timestamp, data[idx])
-            estimated_signal.append(est)
-            estimated_freq.append(self.classifier.estimatedFrequency)
-        return estimated_signal, estimated_freq
+            signal, freq, power = self.process(timestamp, data[idx])
+            estimated_signal.append(signal)
+            estimated_freq.append(freq)
+            estimated_power.append(power)
+        return estimated_signal, estimated_freq, estimated_power
 
     def process(self, timestamp, sample):
         """ stream data and classify
@@ -134,7 +146,8 @@ class FLCWrapper:
 
         """
 
-        estimated_signal = self.classifier.BMFLC(timestamp, sample)
+        estimated_signal = self.classifier.update(timestamp, sample)
         estimated_freq = self.classifier.estimatedFrequency
+        estimated_power =  self.power_estimator.update(estimated_signal)
 
-        return estimated_signal, estimated_freq
+        return estimated_signal, estimated_freq, estimated_power

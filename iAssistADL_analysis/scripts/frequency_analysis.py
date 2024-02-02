@@ -5,7 +5,7 @@ from iAssistADL_analysis.loaders import *
 from iAssistADL_analysis.classifier import FLCWrapper, BMFLC
 
 
-def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, event_timestamps=None):
+def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, estimated_power=None, event_timestamps=None):
 
     real_signal = np.array(real_signal)
     real_signal[np.isnan(real_signal)] = 0
@@ -22,7 +22,7 @@ def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, event_
 
     fig, axs = plt.subplots(nrows=2)
     ax1 = axs[0]
-    ax2 = axs[1]
+    ax3 = axs[1]
 
     ax1.set_title("Frequency Analysis")
 
@@ -32,16 +32,21 @@ def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, event_
     ax1.set_ylabel('Frequency (Hz)')
     ax1.legend()
 
-    ax2.plot(timestamps, real_signal,color='b', label='Real Signal')
-    ax2.plot(timestamps, estimated_signal, color='y', label='Estimated Signal')
-    ax2.set_xlabel('Time')
-    ax2.set_ylabel('Signal')
-    ax2.legend()
+    if estimated_power is not None:
+        ax2 = ax1.twinx()
+        ax2.set_ylabel('Power', color='blue')
+        ax2.plot(timestamps, estimated_power, color='blue')
+
+    ax3.plot(timestamps, real_signal,color='b', label='Real Signal')
+    ax3.plot(timestamps, estimated_signal, color='y', label='Estimated Signal')
+    ax3.set_xlabel('Time')
+    ax3.set_ylabel('Signal')
+    ax3.legend()
 
     if event_timestamps is not None:
         for event_timestamp in event_timestamps:
             ax1.axvline(event_timestamp, color="pink", label="Point reached")
-            ax2.axvline(event_timestamp, color="pink", label="Point reached")
+            ax3.axvline(event_timestamp, color="pink", label="Point reached")
 
     fig.tight_layout()
     plt.show()
@@ -86,12 +91,18 @@ if __name__ == "__main__":
         estimated_signal = xsense["Sensors"][sensor]["Estimated_Signal"][0]
         estimated_freq = xsense["Sensors"][sensor]["Estimated_Frequency"][0]
     else:
-        classifier = BMFLC(mu=0.01, fmin=2, fmax=10, dF=0.5)
+        classifier = BMFLC(mu=0.01, fmin=2, fmax=10, dF=0.1)
+        # df Spacing vom Referenzsignal
+        # My schnelle anpassung
+        # Kalmann ähnlich zu lowpassfilter
+        # wie gut passt die Vohersage zum tatsächlich gemessen wert, passen dann die Gewichte an, gewichte der sinuse und cosinusse speichern die Historie
+        # optimierung auf basis der nähe zwischen orginalsignal und estimated signal
+        # berenchnen der amplitude auf basis zwischen zwei timestaps gewieghted auf timestamps (getielt durch timestamps)
         classification_wrapper = FLCWrapper(classifier)
-        estimated_signal, estimated_freq = classification_wrapper.estimate(sensor_timestamps, real_signal)
-    sensor_timestamps, (real_signal, estimated_signal, estimated_freq) = cut(display_range, sensor_timestamps, (real_signal, estimated_signal, estimated_freq))
+        estimated_signal, estimated_freq, estimated_power = classification_wrapper.estimate(sensor_timestamps, real_signal)
+    sensor_timestamps, (real_signal, estimated_signal, estimated_freq, estimated_power) = cut(display_range, sensor_timestamps, (real_signal, estimated_signal, estimated_freq, estimated_power))
 
-    plot_stuff(sensor_timestamps, real_signal, estimated_signal, estimated_freq, event_timestamps)
+    plot_stuff(sensor_timestamps, real_signal, estimated_signal, estimated_freq, estimated_power, event_timestamps)
     
 
     
