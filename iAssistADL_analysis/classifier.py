@@ -97,6 +97,116 @@ class BMFLC():
 
         return y
 
+class BMFLC_Kalman():
+    """
+    FLC filter class
+
+    Attributes
+    ----------
+    n : int
+        Number of harmonics
+    X : ndarray
+        Reference input vector
+    W : ndarray
+        Weights
+    V : ndarray
+        Angular  frequencies
+    fmin : float
+        Minimum frequency
+    fmax : float
+        Maximum frequency
+    dF : float
+        Frequrncey step
+    R : float
+        measurement noise
+    Q : float
+        system noise
+    P : float
+        covariance weight
+
+    """
+
+    def __init__(self, fmin=3, fmax=9, dF=0.1, R=0.01, Q=0.01, P=0.01):
+        """
+        Parameters
+        ----------
+        n : int
+            Number of harmonics
+        f0 : float
+            Starting frequency
+        """
+
+        self.n = int((fmax - fmin) / dF) + 1
+        self.fmax = fmax
+        self.fmin = fmin
+        self.X = np.zeros(shape=(1, self.n * 2 + 1))
+        self.X[0][-1] = 1
+        self.W = np.zeros(shape=(1, self.n * 2 + 1))
+        self.V = np.array(np.zeros([self.n + 1]))
+        self.estimatedFrequency = 0
+        # Kalman stuff
+        self.P = np.identity(self.n * 2 + 1) * P  # Covariance Matrix
+        self.K = np.zeros(shape=(self.n * 2 + 1, 1))  # Kalman gain
+        self.R = np.array([[R]])  # measurement noise covariance
+
+        self.Q = np.eye(self.n * 2 + 1) * Q  # process noise covariance
+
+        for i in range(self.n):
+            self.V[i] = 2 * math.pi * (self.fmin + dF * i)
+
+    def update(self, k, s):
+        """ BMFLC filter
+
+        Parameters
+        ----------
+        k : float
+            Time instant
+        s : float
+            Reference signal
+
+        Returns
+        -------
+        y : float
+            Estimated signal
+        """
+        for i in range(self.n):
+            self.X[0][i] = math.sin(self.V[i] * k)
+            self.X[0][i + self.n] = math.cos(self.V[i] * k)
+
+        y = np.dot(np.transpose(self.W[0][0:self.n]), self.X[0][0:self.n]) + np.dot(np.transpose(self.W[0][self.n:]),
+                                                                                    self.X[0][self.n:])
+
+        # Update weights Kalman
+
+        # Compute Kalman gain K = P * H^T * (H * P * H^T + R)^-1
+        S = np.dot(np.dot(self.X, self.P), np.transpose(self.X)) + self.R
+        S_inv = S ** -1
+        self.K = np.dot(np.dot(self.P, np.transpose(self.X)), S_inv)
+
+        # Update the BMFLC weights?
+        newW0 = np.dot(self.K, (s - np.dot(np.transpose(self.X[0]), self.W[0])))
+        self.W[0] += newW0.flatten()
+
+        # Update correlation matrix
+        self.P = np.dot((np.identity(len(self.K)) - np.dot(self.K, self.X)), self.P) + self.Q
+
+        I = self.W[0][-1]
+        T = y - I
+
+        a = 0
+        b = 0
+        vest = 0
+
+        for i in range(self.n):
+            a += (self.W[0][i] ** 2 + self.W[0][i + self.n] ** 2) * self.V[i]
+            b += self.W[0][i] ** 2 + self.W[0][i + self.n] ** 2
+        vest += a / b
+
+        self.estimatedFrequency = vest / (2 * math.pi)
+
+        return y
+
+
 
 class FLCWrapper:
     """Wraps a generic FLC"""
@@ -151,3 +261,4 @@ class FLCWrapper:
         estimated_power =  self.power_estimator.update(estimated_signal)
 
         return estimated_signal, estimated_freq, estimated_power
+
