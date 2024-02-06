@@ -4,6 +4,13 @@ from scipy import signal
 from iAssistADL_analysis.loaders import *
 from iAssistADL_analysis.classifier import FLCWrapper, BMFLC
 
+def get_cwtmatrix(signal_to_analyze):
+    frame_rate = 60
+    w = 6.
+    freqs = np.linspace(1, frame_rate / 3, 120)
+    widths = w * frame_rate / (2 * freqs * np.pi)
+    cwtmatr = signal.cwt(signal_to_analyze, signal.morlet2, widths, w=w)
+    return freqs, cwtmatr
 
 def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, estimated_power=None, event_timestamps=None):
 
@@ -14,18 +21,16 @@ def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, estima
     pca_dat = pca.fit_transform(real_signal)
     pca_dat = np.reshape(pca_dat,[len(pca_dat),])
     """
-    frame_rate = 60
-    w = 6.
-    freqs = np.linspace(1, frame_rate/3, 120)
-    widths = w*frame_rate / (2*freqs*np.pi)
-    cwtmatr = signal.cwt(real_signal, signal.morlet2, widths,w=w)
 
-    fig, axs = plt.subplots(nrows=2)
+
+    fig, axs = plt.subplots(nrows=3)
     ax1 = axs[0]
-    ax3 = axs[1]
+    ax3 = axs[2]
+    ax4 = axs[1]
 
     ax1.set_title("Frequency Analysis")
 
+    freqs, cwtmatr = get_cwtmatrix(real_signal)
     ax1.pcolormesh(timestamps, freqs, np.abs(cwtmatr), cmap='viridis', shading='gouraud')
     ax1.plot(timestamps,estimated_freq,color='r', label='Estimated Frequency')
     ax1.set_xlabel('Time')
@@ -36,6 +41,9 @@ def plot_stuff(timestamps, real_signal, estimated_signal, estimated_freq, estima
         ax2 = ax1.twinx()
         ax2.set_ylabel('Power', color='blue')
         ax2.plot(timestamps, estimated_power, color='blue')
+
+    freqs, cwtmatr = get_cwtmatrix(estimated_signal)
+    ax4.pcolormesh(timestamps, freqs, np.abs(cwtmatr), cmap='viridis', shading='gouraud')
 
     ax3.plot(timestamps, real_signal,color='b', label='Real Signal')
     ax3.plot(timestamps, estimated_signal, color='y', label='Estimated Signal')
@@ -90,6 +98,7 @@ if __name__ == "__main__":
     if use_real_time_estimation:
         estimated_signal = xsense["Sensors"][sensor]["Estimated_Signal"][0]
         estimated_freq = xsense["Sensors"][sensor]["Estimated_Frequency"][0]
+        estimated_power = xsense["Sensors"][sensor]["Estimated_Strength"][0]
     else:
         classifier = BMFLC(mu=0.01, fmin=2, fmax=10, dF=0.1)
         # df Spacing vom Referenzsignal
