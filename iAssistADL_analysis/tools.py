@@ -5,7 +5,7 @@ def diff_between_samples(samples):
 
 def samples_lost(timestamps: list):
     """"
-    Based on timestamps this funtion determines the number of datums lost
+    Based on timestamps this function determines the number of datums lost
     """
 
     time_diffs = diff_between_samples(timestamps)
@@ -18,12 +18,12 @@ def samples_lost(timestamps: list):
             number_samples_lost_in_diff = round(diff / median_deviation_time_diffs)-1
             number_samples_lost = number_samples_lost + number_samples_lost_in_diff
 
-    percentage_samples_lost = number_samples_lost/len(time_diffs)
-    return number_samples_lost, percentage_samples_lost
+    ratio_samples_lost = number_samples_lost/len(time_diffs)
+    return number_samples_lost, ratio_samples_lost
 
 def jumps(seqIDS: list):
     """"
-    Based on seqIDS this funtion determines all jumps
+    Based on seqIDS this function determines all jumps
     """
 
     diffs = diff_between_samples(seqIDS)
@@ -32,3 +32,5 @@ def jumps(seqIDS: list):
         if diff > 1:
             jump_list.append(diff)
     return jump_list
+
+
